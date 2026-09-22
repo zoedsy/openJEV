@@ -1,3 +1,5 @@
+**English** | [简体中文](README.zh-CN.md)
+
 # openJEV
 
 **Small questions. Clear decisions.**
@@ -26,15 +28,27 @@ cd openJEV
 ./run.sh
 ```
 
-While the repository is private, cloning requires repository access. Python dependencies and model weights download on first launch. Open **http://127.0.0.1:8766**. No model API key is required.
+While the repository is private, cloning requires repository access. Python dependencies and model weights download on first launch. Open the **[playground](http://127.0.0.1:8766/)**. No model API key is required.
 
-The playground defaults to **English**, with an **English / 简体中文** language switch. It includes fictional customer support, product feedback, fact-checking and product-listing examples. The selected language is shared across both pages; changing it does not translate or overwrite a custom input or a completed result.
+The playground defaults to **English**, with an **English / 简体中文** (`en` / `zh`) language switch shared with the ticket workspace. Changing language does not translate or overwrite a custom input or a completed result.
 
-For a batch, open **http://127.0.0.1:8766/tickets**. Define a service scope and import CSV/JSON messages; classify the request, check whether it is in scope, and prioritize by explicit urgency. Pause/resume, filter/sort, and export every record with its exact input and raw result. Missing messages stay unscored. Start with five clearly marked fictional demo tickets. See the [ticket workspace guide](docs/tickets.md).
+## Explore the bilingual example gallery
+
+Open the **[example gallery](http://127.0.0.1:8766/?view=examples)**, choose a card to load its context and questions, then run it in the playground. Cards always show both English and Chinese titles; descriptions, categories and usage notes follow the selected interface language. The first five examples also remain available as shortcuts on the main page.
+
+There are **12 fictional, general-purpose scenarios**: support tickets, refund requests, product reviews, order facts, product listings, feedback triage, content routing, request completeness, service desk routing, meeting follow-up, delivery exceptions and policy evidence. The original five and seven additions contain no real customer records or personal work content. Model answers are not prefilled.
+
+See the **[scenario table and information boundaries](docs/use-cases.md#english)** for direct links, useful questions and facts the input cannot establish. These examples demonstrate workflows; they are not an accuracy benchmark.
+
+![Bilingual example gallery](docs/examples-gallery.png)
+
+## Triage a batch of tickets
+
+For a batch, open the **[ticket workspace](http://127.0.0.1:8766/tickets)**. Define a service scope and import CSV/JSON messages; classify the request, check whether it is in scope, and prioritize by explicit urgency. Pause/resume, filter/sort, and export every record with its exact input and raw result. Missing messages stay unscored. Start with five clearly marked fictional demo tickets. See the [ticket workspace guide](docs/tickets.md).
 
 ![Batch ticket workspace](docs/tickets-workspace.png)
 
-For other applications, see [use cases and example questions](docs/use-cases.md): feedback classification, product data checks, intake validation and content labeling.
+The workspace produces reviewable decisions. It does not send customer replies, approve refunds, assign work in external systems or update orders.
 
 ```bash
 # Once MiniLM has downloaded, run without network model downloads.
@@ -123,7 +137,7 @@ Read the **[evaluation and improvement recipe](docs/recipe.md)** and **[validati
 - Maximum 32 questions and 256 candidate evaluations per request; DiffusionGemma Choice has at most 128 options. The 8192-token GPU window includes internal prompts. Oversized requests fail explicitly.
 - Typed decisions return structured answers without generating prose. DiffusionGemma text generation is a separate endpoint and requires more model work. A correct schema does not establish correct reasoning.
 - The local API accepts at most 256 KiB per request and two active requests; extra requests receive 429. The optional stdio relay serializes requests over one persistent connection and reconnects for a subsequent request after failure, without replaying an uncertain request.
-- The single-request playground stores the last 20 runs in browser local history; clear them in the UI. The ticket workspace keeps its batch only in page memory, so export before refreshing. The server does not persist request bodies by default. On first use of this version, the old `openjev.runs.v1` demo history is cleared; unrelated browser data is preserved.
+- The single-request playground stores the last 20 runs in browser local history; clear them in the UI. The ticket workspace keeps its batch only in page memory, so export before refreshing. The server does not persist request bodies by default. The previous demo-history key is cleared on migration; unrelated browser data is preserved.
 - The playground binds to loopback. `OPENJEV_API_KEY` can protect `/v1` endpoints. A public multi-user service needs its own authentication, rate limiting, and deployment design.
 
 ## Development

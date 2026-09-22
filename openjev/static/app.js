@@ -208,7 +208,30 @@ const TRANSLATIONS = {
   "Local API key": "本地 API key",
   "Connect": "连接",
   "Service offline": "服务未连接",
-  "Cannot reach the local service. Start python -m openjev serve from the project directory. This page will reconnect automatically.": "无法连接本地服务。请在项目目录运行 python -m openjev serve，页面会自动重连。"
+  "Cannot reach the local service. Start python -m openjev serve from the project directory. This page will reconnect automatically.": "无法连接本地服务。请在项目目录运行 python -m openjev serve，页面会自动重连。",
+  "Examples": "案例画廊",
+  "Browse all examples": "浏览全部案例",
+  "EVERYDAY DECISIONS": "日常场景，具体判断",
+  "Find a scenario.": "挑选一个场景，",
+  "Make it yours.": "改成你的需求。",
+  "Explore everyday tasks in English and Chinese. Load an example, review its questions, and run it when you are ready.": "用中文或英文体验日常任务。载入案例、查看问题，再按需运行。",
+  "Back to Playground": "返回实验台",
+  "Every example includes both languages. Your language selection controls the inputs and questions you load.": "每个案例都提供中英两种语言，载入的上下文与问题会使用你当前选择的语言。",
+  "Search examples": "搜索案例",
+  "Search in English or Chinese": "用英文或中文搜索",
+  "Category": "分类",
+  "All categories": "全部分类",
+  "Clear filters": "清除筛选",
+  "Fictional examples · ready to edit": "虚构场景 · 可自由编辑",
+  "No examples match this search.": "没有符合条件的案例。",
+  "Try another keyword or clear the filters.": "换一个关键词，或清除筛选条件。",
+  "{count} of {total} examples": "共 {total} 个案例，显示 {count} 个",
+  "Explore": "练习重点",
+  "Load example": "载入案例",
+  "Load {name}": "载入 {name}",
+  "Loaded": "已载入",
+  "Other": "其他",
+  "Example loaded. Review the inputs, then run when ready.": "案例已载入。请查看上下文与问题，再按需运行。"
 };
 let locale = 'en';
 try { locale = localStorage.getItem('openjev.locale') === 'zh' ? 'zh' : 'en'; } catch {}
@@ -226,6 +249,8 @@ $$('[aria-label],[title],[placeholder],meta[name="description"]').forEach(elemen
   }
 });
 let examples = [], questions = {}, stateMode = 'text', activePreset = null, activeView = 'playground';
+let exampleSearch = '', exampleCategory = '';
+const QUICK_EXAMPLES = ['support','chinese','review','facts','product_quality'];
 let result = null, resultRequest = null, pending = false, outputMode = 'visual';
 let status = null, statusFailed = false, editingId = null, codeMode = 'curl', apiKey = '';
 let runs = [], toastTimer, lastError = '', lastToast = '', legacyHistoryCleared = false, legacyCleanupFailed = false;
@@ -240,8 +265,11 @@ function toast(message) { lastToast=canonicalText(message); $('#toast').textCont
 function setView(view) {
   activeView=view; $$('.page-view').forEach(el=>{el.hidden=el.id!==`${view}-view`;});
   $$('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.view===view));
-  $('#breadcrumb-view').textContent=t({playground:'Playground',history:'Run history',guide:'Guide'}[view]);
-  if (view==='history') renderHistory(); window.scrollTo({top:0,behavior:'smooth'});
+  $('#breadcrumb-view').textContent=t({playground:'Playground',examples:'Examples',history:'Run history',guide:'Guide'}[view]);
+  if (view==='history') renderHistory();
+  if (view==='examples') renderExampleGallery();
+  const url=new URL(location.href);if(view==='playground')url.searchParams.delete('view');else url.searchParams.set('view',view);window.history.replaceState(null,'',url);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function getRequest() {
   const text=$('#state-input').value; if(!text.trim()) throw new Error(t('Enter some context before running.'));
@@ -256,8 +284,39 @@ function markEdited(){activePreset=null;renderPresets();countChars();renderOutpu
 function setState(value){stateMode=typeof value==='string'?'text':'json';$('#state-input').value=serialize(value);renderStateMode();countChars();}
 function renderStateMode(){$$('#state-modes button').forEach(b=>b.classList.toggle('selected',b.dataset.mode===stateMode));$('#state-input').classList.toggle('json',stateMode==='json');}
 const exampleValue=(example,key)=>locale==='zh'?(example[`${key}_zh`]??example[key]):example[key];
-function loadExample(id){const sample=examples.find(e=>e.id===id);if(!sample)return;questions=clone(exampleValue(sample,'questions'));setState(exampleValue(sample,'state'));activePreset=id;renderQuestions();renderPresets();renderOutput();hideError();}
-function renderPresets(){$('#presets').innerHTML=examples.map((e,i)=>`<button class="preset ${e.id===activePreset?'active':''}" data-preset="${esc(e.id)}" title="${esc(exampleValue(e,'description'))}">${icon(['ticket','globe','star','check','ticket'][i])}${esc(exampleValue(e,'name'))}</button>`).join('');}
+function loadExample(id){const sample=examples.find(e=>e.id===id);if(!sample)return;questions=clone(exampleValue(sample,'questions'));setState(exampleValue(sample,'state'));activePreset=id;renderQuestions();renderPresets();renderExampleGallery();renderOutput();hideError();}
+function renderPresets(){
+  const quick=QUICK_EXAMPLES.map(id=>examples.find(example=>example.id===id)).filter(Boolean);
+  $('#presets').innerHTML=quick.map(e=>`<button class="preset ${e.id===activePreset?'active':''}" data-preset="${esc(e.id)}" title="${esc(exampleValue(e,'description'))}">${icon(e.icon||'ticket')}${esc(exampleValue(e,'name'))}</button>`).join('');
+  $('#example-total').textContent=examples.length;
+}
+function renderExampleGallery(){
+  const categories=new Map();for(const example of examples)categories.set(example.category||'Other',exampleValue(example,'category')||t('Other'));
+  if(exampleCategory&&!categories.has(exampleCategory))exampleCategory='';
+  $('#example-category').innerHTML=`<option value="">${t('All categories')}</option>`+[...categories].map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('');
+  $('#example-category').value=exampleCategory;
+  const query=exampleSearch.trim().toLocaleLowerCase();
+  const filtered=examples.filter(example=>{
+    if(exampleCategory&&(example.category||'Other')!==exampleCategory)return false;
+    return !query||['name','name_zh','description','description_zh','category','category_zh','learning','learning_zh'].map(key=>example[key]||'').join(' ').toLocaleLowerCase().includes(query);
+  });
+  $('#example-count').textContent=t('{count} of {total} examples',{count:filtered.length,total:examples.length});
+  $('#clear-example-filters').disabled=!exampleSearch&&!exampleCategory;
+  $('#example-empty').hidden=filtered.length!==0;
+  $('#example-gallery').innerHTML=filtered.map(example=>{
+    const primary=locale==='zh'?example.name_zh||example.name:example.name;
+    const secondary=locale==='zh'?example.name:example.name_zh||example.name;
+    const types=[...new Set(Object.values(example.questions).map(question=>question.type))];
+    const selected=example.id===activePreset;
+    return `<article class="example-card ${selected?'example-card-loaded':''}" role="listitem" data-example-id="${esc(example.id)}"><div class="example-card-top"><span class="example-card-icon">${icon(example.icon||'ticket')}</span><span class="example-category-chip">${esc(exampleValue(example,'category')||t('Other'))}</span>${selected?`<span class="example-loaded">${t('Loaded')}</span>`:''}</div><h2 class="example-card-title"><span lang="${locale==='zh'?'zh-CN':'en'}">${esc(primary)}</span><span class="example-title-secondary" lang="${locale==='zh'?'en':'zh-CN'}">${esc(secondary)}</span></h2><p class="example-description">${esc(exampleValue(example,'description'))}</p><div class="example-learning"><strong>${t('Explore')}</strong><p>${esc(exampleValue(example,'learning')||exampleValue(example,'description'))}</p></div><div class="example-card-bottom"><div class="example-types">${types.map(type=>`<span class="type-badge ${esc(type)}">${esc(type[0].toUpperCase()+type.slice(1))}</span>`).join('')}</div><button class="example-load" data-load-example="${esc(example.id)}" aria-label="${esc(t('Load {name}',{name:primary}))}">${t('Load example')}<span aria-hidden="true">↗</span></button></div></article>`;
+  }).join('');
+}
+function selectExample(id){
+  if(!examples.some(example=>example.id===id))return;
+  loadExample(id);setView('playground');const url=new URL(location.href);url.searchParams.set('example',id);window.history.replaceState(null,'',url);
+  toast(t('Example loaded. Review the inputs, then run when ready.'));
+}
+
 function renderQuestions(){
   const entries=Object.entries(questions);$('#question-count').textContent=entries.length;
   $('#questions').innerHTML=entries.map(([key,q])=>{
@@ -348,16 +407,16 @@ function applyLanguage(next,initial=false){
   locale=next==='zh'?'zh':'en';try{localStorage.setItem('openjev.locale',locale);}catch{}document.documentElement.lang=locale==='zh'?'zh-CN':'en';$('#language-select').value=locale;
   for(const item of staticText)if(item.node.isConnected)item.node.textContent=item.prefix+t(item.text)+item.suffix;
   for(const item of staticAttributes)item.element.setAttribute(item.attr,t(item.text));
-  $('#breadcrumb-view').textContent=t({playground:'Playground',history:'Run history',guide:'Guide'}[activeView]);
+  $('#breadcrumb-view').textContent=t({playground:'Playground',examples:'Examples',history:'Run history',guide:'Guide'}[activeView]);
   if(!initial&&activePreset)loadExample(activePreset);else{renderQuestions();renderPresets();renderOutput();countChars();}
-  renderHistory();renderStatus();$('#run-label').textContent=t(pending?'Evaluating':'Run evaluation');
+  renderExampleGallery();renderHistory();renderStatus();$('#run-label').textContent=t(pending?'Evaluating':'Run evaluation');
   if($('#question-dialog').open){$('#dialog-title').textContent=t(editingId?'Edit question':'Add a question');$('#form-error').textContent=t(canonicalText($('#form-error').textContent));updateCriteriaHelp();}
   if($('#code-dialog').open)renderCode();if(lastError)$('#error-message').textContent=t(lastError);if(!$('#toast').hidden)$('#toast').textContent=t(lastToast);
 }
 $$('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon);});
 document.addEventListener('click',event=>{
   const target=event.target.closest('button');if(!target)return;
-  if(target.dataset.view)setView(target.dataset.view);if(target.dataset.preset)loadExample(target.dataset.preset);if(target.hasAttribute('data-edit'))editQuestion(target.dataset.edit);
+  if(target.dataset.view)setView(target.dataset.view);if(target.dataset.preset)selectExample(target.dataset.preset);if(target.dataset.loadExample)selectExample(target.dataset.loadExample);if(target.hasAttribute('data-edit'))editQuestion(target.dataset.edit);
   if(target.hasAttribute('data-delete')){questions=Object.fromEntries(Object.entries(questions).filter(([key])=>key!==target.dataset.delete));renderQuestions();markEdited();}
   if(target.hasAttribute('data-close'))target.closest('dialog').close();
   if(target.dataset.output){outputMode=target.dataset.output;$$('.output-tabs [data-output]').forEach(b=>b.classList.toggle('selected',b.dataset.output===outputMode));renderOutput();}
@@ -367,6 +426,9 @@ document.addEventListener('click',event=>{
   if(target.id==='set-key'){apiKey=$('#local-key').value.trim();if(apiKey){$('#model-notice').hidden=true;toast(t('The API key stays in this page’s memory only.'));}}
 });
 $('#language-select').addEventListener('change',event=>applyLanguage(event.target.value));
+$('#example-search').addEventListener('input',event=>{exampleSearch=event.target.value;renderExampleGallery();});
+$('#example-category').addEventListener('change',event=>{exampleCategory=event.target.value;renderExampleGallery();});
+$('#clear-example-filters').addEventListener('click',()=>{exampleSearch='';exampleCategory='';$('#example-search').value='';renderExampleGallery();$('#example-search').focus();});
 window.addEventListener('storage',event=>{if(event.key==='openjev.locale')applyLanguage(event.newValue);});
 $('#state-input').addEventListener('input',markEdited);$('#run-button').addEventListener('click',run);$('#add-question').addEventListener('click',()=>editQuestion());$('#question-form').addEventListener('submit',saveQuestion);
 $('#edit-type').addEventListener('change',()=>{const type=$('#edit-type').value;$('#edit-criteria').value=type==='noul'?'':JSON.stringify(defaultCriteria(type),null,2);updateCriteriaHelp();});
@@ -375,4 +437,4 @@ $('#download-result').addEventListener('click',()=>{if(!result)return;const url=
 $('#clear-history').addEventListener('click',()=>{if(confirm(t('Clear all run history saved by this app in this browser?'))){runs=[];try{localStorage.removeItem(HISTORY_KEY);}catch{}renderHistory();toast(t('Run history cleared.'));}});
 document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!document.querySelector('dialog[open]')&&!$('#playground-view').hidden){event.preventDefault();run();}});
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
-(async function init(){applyLanguage(locale,true);checkStatus();try{const response=await fetch('/api/examples');if(!response.ok)throw new Error();examples=await response.json();const requested=new URLSearchParams(location.search).get('example');loadExample(examples.some(e=>e.id===requested)?requested:examples[0].id);}catch{showError(t('Could not load examples. Start the service and refresh this page.'));}if(legacyCleanupFailed)toast(t('The browser blocked old-history cleanup. Previous-version records are not loaded.'));else if(legacyHistoryCleared)toast(t('Previous-version local demo history was cleared for this update.'));})();
+(async function init(){applyLanguage(locale,true);checkStatus();try{const response=await fetch('/api/examples');if(!response.ok)throw new Error();examples=await response.json();const requested=new URLSearchParams(location.search).get('example');loadExample(examples.some(e=>e.id===requested)?requested:examples[0].id);const requestedView=new URLSearchParams(location.search).get('view');if(['examples','history','guide'].includes(requestedView))setView(requestedView);}catch{showError(t('Could not load examples. Start the service and refresh this page.'));}if(legacyCleanupFailed)toast(t('The browser blocked old-history cleanup. Previous-version records are not loaded.'));else if(legacyHistoryCleared)toast(t('Previous-version local demo history was cleared for this update.'));})();

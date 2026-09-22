@@ -28,7 +28,7 @@
       },
       "is_urgent": {
         "type": "noul",
-        "instructions": "The customer needs immediate help because of an urgent deadline."
+        "instructions": "The request explicitly mentions a deadline in two hours."
       }
     },
     "questions_zh": {
@@ -52,9 +52,14 @@
       },
       "is_urgent": {
         "type": "noul",
-        "instructions": "客户因紧急截止时间而需要立即获得帮助。"
+        "instructions": "请求中明确提到两小时后的截止时间。"
       }
-    }
+    },
+    "icon": "ticket",
+    "category": "Customer service",
+    "category_zh": "客户服务",
+    "learning": "Separate the request topic, expressed frustration, and a stated deadline.",
+    "learning_zh": "分别查看请求主题、表达的不满和明确时限。"
   },
   {
     "id": "chinese",
@@ -85,7 +90,7 @@
       },
       "defective": {
         "type": "noul",
-        "instructions": "The headphones are defective and do not work normally."
+        "instructions": "The customer reports that the left headphone produces no sound on several phones."
       }
     },
     "questions_zh": {
@@ -109,9 +114,14 @@
       },
       "defective": {
         "type": "noul",
-        "instructions": "耳机存在故障，无法正常使用。"
+        "instructions": "顾客明确描述左侧耳机在多台手机上都没有声音。"
       }
-    }
+    },
+    "icon": "history",
+    "category": "Customer service",
+    "category_zh": "客户服务",
+    "learning": "Identify a refund request without deciding whether a refund is owed.",
+    "learning_zh": "识别退款诉求，不据此决定是否应当退款。"
   },
   {
     "id": "review",
@@ -143,7 +153,7 @@
       },
       "recommends": {
         "type": "noul",
-        "instructions": "The reviewer would recommend the product to others."
+        "instructions": "The review explicitly says the writer would recommend the product to a friend."
       }
     },
     "questions_zh": {
@@ -168,16 +178,21 @@
       },
       "recommends": {
         "type": "noul",
-        "instructions": "评价者愿意向其他人推荐这款产品。"
+        "instructions": "评价中明确表示愿意把商品推荐给朋友。"
       }
-    }
+    },
+    "icon": "star",
+    "category": "Feedback & content",
+    "category_zh": "反馈与内容",
+    "learning": "Compare overall sentiment, satisfaction, and an explicit recommendation.",
+    "learning_zh": "比较整体情绪、满意程度和明确的推荐表态。"
   },
   {
     "id": "facts",
     "name": "Order facts",
     "name_zh": "订单事实",
-    "description": "Compare supported, contradicted, and unknown statements.",
-    "description_zh": "比较有依据、相互矛盾和信息不足的判断。",
+    "description": "Check what a fictional order record explicitly states.",
+    "description_zh": "检查虚构订单记录中明确写出的内容。",
     "state": {
       "fictional": true,
       "order_id": "DEMO-104",
@@ -205,7 +220,7 @@
       },
       "likes_color": {
         "type": "noul",
-        "instructions": "The recipient likes the color of the kettle."
+        "instructions": "The order record explicitly states that the recipient likes the kettle color."
       }
     },
     "questions_zh": {
@@ -219,9 +234,14 @@
       },
       "likes_color": {
         "type": "noul",
-        "instructions": "收件人喜欢这个水壶的颜色。"
+        "instructions": "订单记录明确写出了收件人喜欢水壶的颜色。"
       }
-    }
+    },
+    "icon": "check",
+    "category": "Operations",
+    "category_zh": "日常办公",
+    "learning": "Check recorded statements without guessing an omitted personal preference.",
+    "learning_zh": "检查记录中明确写出的内容，不猜测未提及的个人偏好。"
   },
   {
     "id": "product_quality",
@@ -253,7 +273,7 @@
       },
       "missing_care_instructions": {
         "type": "noul",
-        "instructions": "The listing does not provide care instructions."
+        "instructions": "The listing explicitly marks care instructions as not provided."
       }
     },
     "questions_zh": {
@@ -278,8 +298,473 @@
       },
       "missing_care_instructions": {
         "type": "noul",
-        "instructions": "商品页面没有提供清洁保养说明。"
+        "instructions": "商品页面明确标注清洁保养说明未提供。"
       }
-    }
+    },
+    "icon": "sliders",
+    "category": "Quality checks",
+    "category_zh": "质量检查",
+    "learning": "Check consistency separately from whether required details are present.",
+    "learning_zh": "将信息是否矛盾与必需材料是否齐全分开判断。"
+  },
+  {
+    "id": "feedback",
+    "name": "Feedback triage",
+    "name_zh": "反馈分类",
+    "description": "Separate a feature suggestion from a fault or a how-to question.",
+    "description_zh": "区分功能建议、故障报告和使用咨询。",
+    "state": "Fictional shopping-app feedback: Please add a size filter to the product list. I currently open each item to check its size, which takes extra time. Browsing and checkout both work normally.",
+    "state_zh": "虚构购物应用反馈：请给商品列表增加尺码筛选。我现在需要逐个打开商品查看尺码，比较费时间。浏览和结账功能都能正常使用。",
+    "questions": {
+      "feedback_type": {
+        "type": "choice",
+        "instructions": "What is the main purpose of this message?",
+        "criteria": {
+          "feature_request": "Suggest adding or improving a feature.",
+          "bug_report": "Report that an existing function fails.",
+          "how_to": "Ask how to use an existing function.",
+          "unclear": "The purpose is missing or cannot be distinguished."
+        }
+      },
+      "workflow_impact": {
+        "type": "score",
+        "instructions": "Rate only the workflow impact explicitly described.",
+        "criteria": [
+          "No inconvenience or blocked action is described.",
+          "Work remains possible but takes extra time or steps.",
+          "A main action is blocked, but an alternative is explicitly available.",
+          "A main action is blocked and the message explicitly says there is no alternative."
+        ]
+      },
+      "checkout_works": {
+        "type": "noul",
+        "instructions": "The message explicitly says checkout works normally."
+      }
+    },
+    "questions_zh": {
+      "feedback_type": {
+        "type": "choice",
+        "instructions": "这条消息的主要目的是什么？",
+        "criteria": {
+          "feature_request": "建议新增或改进功能。",
+          "bug_report": "报告现有功能无法正常工作。",
+          "how_to": "询问现有功能的使用方法。",
+          "unclear": "没有足够信息区分消息的目的。"
+        }
+      },
+      "workflow_impact": {
+        "type": "score",
+        "instructions": "仅按文本明确描述的工作流程影响评分。",
+        "criteria": [
+          "没有描述不便或被阻断的操作。",
+          "仍能完成操作，但需要额外时间或步骤。",
+          "主要操作被阻断，但明确存在替代办法。",
+          "主要操作被阻断，且明确表示没有替代办法。"
+        ]
+      },
+      "checkout_works": {
+        "type": "noul",
+        "instructions": "消息明确表示结账功能可以正常使用。"
+      }
+    },
+    "icon": "sliders",
+    "category": "Feedback & content",
+    "category_zh": "反馈与内容",
+    "learning": "A useful improvement request does not necessarily describe a broken feature.",
+    "learning_zh": "有价值的改进建议不一定是在报告功能故障。"
+  },
+  {
+    "id": "content",
+    "name": "Content routing",
+    "name_zh": "内容分类",
+    "description": "Classify a short notice and check whether its requested action is clear.",
+    "description_zh": "给短消息分类，并检查行动说明是否清楚。",
+    "state": "Fictional office notice: During the scheduled two-hour kitchen cleaning, use the upstairs kitchen instead. This notice does not ask anyone to buy or register for anything.",
+    "state_zh": "虚构办公室公告：在已安排的两小时厨房清洁期间，请改用楼上的厨房。本公告不要求购买任何商品，也不要求报名。",
+    "questions": {
+      "content_type": {
+        "type": "choice",
+        "instructions": "What is the main communicative purpose?",
+        "criteria": {
+          "announcement": "Provide an operational notice or update.",
+          "promotion": "Encourage a purchase, subscription, or commercial registration.",
+          "question": "Ask the audience for an answer.",
+          "unclear": "The purpose is missing or ambiguous."
+        }
+      },
+      "action_clarity": {
+        "type": "score",
+        "instructions": "Count these explicit details: an action, its target or location, and when it applies. An event-based time window counts as timing.",
+        "criteria": [
+          "None of the three details is stated.",
+          "Exactly one detail is stated.",
+          "Exactly two details are stated.",
+          "All three details are stated."
+        ]
+      },
+      "alternative_named": {
+        "type": "noul",
+        "instructions": "The notice explicitly names another kitchen to use."
+      }
+    },
+    "questions_zh": {
+      "content_type": {
+        "type": "choice",
+        "instructions": "这段内容的主要沟通目的是什么？",
+        "criteria": {
+          "announcement": "提供事务公告或情况更新。",
+          "promotion": "鼓励购买、订阅或商业报名。",
+          "question": "向读者提出需要回答的问题。",
+          "unclear": "没有明确或可区分的沟通目的。"
+        }
+      },
+      "action_clarity": {
+        "type": "score",
+        "instructions": "检查三项明确内容：要做的动作、动作的对象或地点、适用时间。按某个事件确定的时间段也算时间说明。",
+        "criteria": [
+          "三项均未说明。",
+          "恰好说明一项。",
+          "恰好说明两项。",
+          "三项全部说明。"
+        ]
+      },
+      "alternative_named": {
+        "type": "noul",
+        "instructions": "公告明确指出了可以替代使用的另一处厨房。"
+      }
+    },
+    "icon": "globe",
+    "category": "Feedback & content",
+    "category_zh": "反馈与内容",
+    "learning": "Classify intent separately from the completeness of an instruction.",
+    "learning_zh": "将内容意图与行动说明是否完整分开判断。"
+  },
+  {
+    "id": "intake",
+    "name": "Request completeness",
+    "name_zh": "请求材料检查",
+    "description": "Check a service request against a supplied three-part checklist.",
+    "description_zh": "按给定的三项清单检查服务请求材料。",
+    "state": "Fictional assembly request. Required details: task, visit location, preferred time slot. Request: Assemble one desk in meeting room B. Preferred time slot: not yet chosen.",
+    "state_zh": "虚构组装服务请求。必需材料：具体任务、上门地点、期望时段。请求：请在 B 会议室组装一张桌子。期望时段：尚未选定。",
+    "questions": {
+      "readiness": {
+        "type": "choice",
+        "instructions": "Is the request ready under the supplied checklist? A field marked not chosen is missing, not complete.",
+        "criteria": {
+          "ready": "All required details are concrete and consistent.",
+          "missing_details": "At least one required detail is missing or undecided.",
+          "conflicting": "Provided details directly contradict each other.",
+          "unclear": "The text does not allow the checklist to be applied."
+        }
+      },
+      "complete_details": {
+        "type": "score",
+        "instructions": "Count required details with a concrete usable value: task, visit location, preferred time slot. A missing or undecided field does not count.",
+        "criteria": [
+          "No required detail is concrete.",
+          "Exactly one required detail is concrete.",
+          "Exactly two required details are concrete.",
+          "All three required details are concrete."
+        ]
+      },
+      "slot_undecided": {
+        "type": "noul",
+        "instructions": "The request explicitly states that the preferred time slot has not been chosen."
+      }
+    },
+    "questions_zh": {
+      "readiness": {
+        "type": "choice",
+        "instructions": "按给定清单，这份请求材料是否齐备？标注尚未选定的字段不算已提供。",
+        "criteria": {
+          "ready": "全部必需材料均具体且一致。",
+          "missing_details": "至少一项必需材料缺失或尚未决定。",
+          "conflicting": "已提供的材料之间存在直接矛盾。",
+          "unclear": "文本不足以应用这份清单。"
+        }
+      },
+      "complete_details": {
+        "type": "score",
+        "instructions": "统计有具体可用值的必需材料：任务、上门地点、期望时段。缺失或尚未决定的字段不计入。",
+        "criteria": [
+          "没有任何一项具体材料。",
+          "恰好有一项具体材料。",
+          "恰好有两项具体材料。",
+          "三项材料全部具体。"
+        ]
+      },
+      "slot_undecided": {
+        "type": "noul",
+        "instructions": "请求明确表示期望时段尚未选定。"
+      }
+    },
+    "icon": "ticket",
+    "category": "Operations",
+    "category_zh": "日常办公",
+    "learning": "Mentioning a field is different from supplying a usable value.",
+    "learning_zh": "提到字段名称，不等于提供了可用的字段内容。"
+  },
+  {
+    "id": "service",
+    "name": "Service desk routing",
+    "name_zh": "服务团队分流",
+    "description": "Route an office enquiry and assess only its explicit response deadline.",
+    "description_zh": "分流办公室咨询，并仅按明确回复时限评估紧迫程度。",
+    "state": "Fictional office enquiry: Please explain which step-free entrance four visitors can use. This concerns building access, not a computer or payment issue. Please reply within two days.",
+    "state_zh": "虚构办公室咨询：请说明四位访客可以使用哪处无台阶入口。这是楼宇出入咨询，不是电脑或付款问题。请在两天内回复。",
+    "questions": {
+      "team": {
+        "type": "choice",
+        "instructions": "Which team best matches the stated enquiry?",
+        "criteria": {
+          "facilities": "Building access, rooms, or physical facilities.",
+          "it_support": "Computers, accounts, or software use.",
+          "finance": "Invoices, payments, or expense administration.",
+          "insufficient_information": "The enquiry is unclear or outside these teams."
+        }
+      },
+      "response_urgency": {
+        "type": "score",
+        "instructions": "Use only the stated response deadline, not an inferred risk or emotional tone.",
+        "criteria": [
+          "No response deadline is stated.",
+          "The deadline is more than two days away.",
+          "The deadline is more than two hours and at most two days away.",
+          "The deadline is at most two hours away."
+        ]
+      },
+      "step_free_requested": {
+        "type": "noul",
+        "instructions": "The enquiry explicitly asks about a step-free entrance."
+      }
+    },
+    "questions_zh": {
+      "team": {
+        "type": "choice",
+        "instructions": "哪支团队最适合处理这项明确咨询？",
+        "criteria": {
+          "facilities": "楼宇出入、房间或实体设施。",
+          "it_support": "电脑、账户或软件使用。",
+          "finance": "账单、付款或报销事务。",
+          "insufficient_information": "咨询内容不清楚或不属于这些团队。"
+        }
+      },
+      "response_urgency": {
+        "type": "score",
+        "instructions": "仅按明确回复时限评分，不推测风险，也不按情绪判断。",
+        "criteria": [
+          "没有说明回复时限。",
+          "时限在两天之后。",
+          "时限超过两小时，且不超过两天。",
+          "时限不超过两小时。"
+        ]
+      },
+      "step_free_requested": {
+        "type": "noul",
+        "instructions": "咨询中明确询问了无台阶入口。"
+      }
+    },
+    "icon": "branches",
+    "category": "Customer service",
+    "category_zh": "客户服务",
+    "learning": "Keep team routing and deadline-based priority as separate decisions.",
+    "learning_zh": "把团队分流和基于时限的优先级分开判断。"
+  },
+  {
+    "id": "meeting",
+    "name": "Meeting follow-up",
+    "name_zh": "会议行动跟进",
+    "description": "Check ownership and completeness of the first agreed action.",
+    "description_zh": "检查首项已确定行动的负责人和跟进信息。",
+    "state": "Fictional office notes: First agreed action: the facilities team will confirm the projector booking within one working day. A later suggestion about refreshments has no assigned owner or deadline.",
+    "state_zh": "虚构办公室纪要：首项已确定行动是由设施团队在一个工作日内确认投影仪预约。之后提出的茶点建议尚未指定负责人或时限。",
+    "questions": {
+      "owner": {
+        "type": "choice",
+        "instructions": "Who is explicitly assigned the first agreed action? Ignore the later suggestion.",
+        "criteria": {
+          "facilities": "The facilities team.",
+          "reception": "The reception team.",
+          "unassigned": "The notes explicitly say this action has no owner.",
+          "insufficient_information": "The owner cannot be determined from the notes."
+        }
+      },
+      "followup_completeness": {
+        "type": "score",
+        "instructions": "For the first agreed action only, count: a concrete action, an assigned owner, and an explicit deadline.",
+        "criteria": [
+          "None of the three follow-up details is stated.",
+          "Exactly one follow-up detail is stated.",
+          "Exactly two follow-up details are stated.",
+          "All three follow-up details are stated."
+        ]
+      },
+      "deadline_explicit": {
+        "type": "noul",
+        "instructions": "The first agreed action explicitly has a deadline of one working day."
+      }
+    },
+    "questions_zh": {
+      "owner": {
+        "type": "choice",
+        "instructions": "谁被明确指定负责首项已确定行动？不要混入后面的建议。",
+        "criteria": {
+          "facilities": "设施团队。",
+          "reception": "接待团队。",
+          "unassigned": "纪要明确说这项行动尚无负责人。",
+          "insufficient_information": "无法从纪要确定这项行动的负责人。"
+        }
+      },
+      "followup_completeness": {
+        "type": "score",
+        "instructions": "只看首项已确定行动，统计三项跟进信息：具体行动、已指定负责人、明确时限。",
+        "criteria": [
+          "三项跟进信息均未说明。",
+          "恰好说明一项跟进信息。",
+          "恰好说明两项跟进信息。",
+          "三项跟进信息全部说明。"
+        ]
+      },
+      "deadline_explicit": {
+        "type": "noul",
+        "instructions": "首项已确定行动明确要求在一个工作日内完成。"
+      }
+    },
+    "icon": "check",
+    "category": "Operations",
+    "category_zh": "日常办公",
+    "learning": "Keep one action separate from nearby suggestions with different owners or deadlines.",
+    "learning_zh": "区分单项行动与相邻建议，避免混用负责人或时限。"
+  },
+  {
+    "id": "delivery",
+    "name": "Delivery exception",
+    "name_zh": "配送异常",
+    "description": "Classify a delivery problem, its stated impact, and missing intake information.",
+    "description_zh": "判断配送问题类型、明确影响及缺失的受理材料。",
+    "state": "Fictional delivery ticket. Support checklist: provide an order reference and describe the problem. Message: The box arrived crushed; one of two cups is broken and the other is usable. Order reference: not provided.",
+    "state_zh": "虚构配送工单。受理清单：提供订单编号并描述问题。消息：箱子送到时被压坏，两只杯子中一只破了，另一只还能使用。订单编号：未提供。",
+    "questions": {
+      "exception_type": {
+        "type": "choice",
+        "instructions": "What delivery problem is explicitly reported?",
+        "criteria": {
+          "damage": "The parcel or an item arrived damaged.",
+          "delay": "The parcel is late or tracking has stalled.",
+          "wrong_item": "The delivered item differs from the ordered item.",
+          "insufficient_information": "The problem is unclear or outside these categories."
+        }
+      },
+      "stated_impact": {
+        "type": "score",
+        "instructions": "Rate the explicitly described physical or availability impact. Do not infer hidden damage.",
+        "criteria": [
+          "No damage or missing parcel is described.",
+          "Only outer packaging is damaged; all items are explicitly usable.",
+          "Some items are damaged, while other items are explicitly usable.",
+          "All items are explicitly unusable, or the entire parcel is explicitly missing."
+        ]
+      },
+      "needs_order_reference": {
+        "type": "noul",
+        "instructions": "The supplied checklist requires an order reference, and the ticket explicitly marks it as not provided."
+      }
+    },
+    "questions_zh": {
+      "exception_type": {
+        "type": "choice",
+        "instructions": "文本明确报告了哪类配送问题？",
+        "criteria": {
+          "damage": "包裹或商品送到时存在破损。",
+          "delay": "包裹迟到或物流信息停滞。",
+          "wrong_item": "送达的商品与所订商品不符。",
+          "insufficient_information": "问题不清楚或不属于这些类别。"
+        }
+      },
+      "stated_impact": {
+        "type": "score",
+        "instructions": "按明确描述的实物或可用性影响评分，不推测未提及的损坏。",
+        "criteria": [
+          "没有描述损坏或整件包裹丢失。",
+          "仅外包装损坏，且明确所有商品都可用。",
+          "部分商品损坏，同时明确其他商品仍可用。",
+          "明确所有商品都无法使用，或整件包裹丢失。"
+        ]
+      },
+      "needs_order_reference": {
+        "type": "noul",
+        "instructions": "给定受理清单要求订单编号，而工单明确标注编号未提供。"
+      }
+    },
+    "icon": "history",
+    "category": "Customer service",
+    "category_zh": "客户服务",
+    "learning": "Recognizing the problem does not mean the request contains every required detail.",
+    "learning_zh": "能够识别问题，不代表请求已包含全部受理材料。"
+  },
+  {
+    "id": "policy",
+    "name": "Policy evidence",
+    "name_zh": "政策证据检查",
+    "description": "Apply only a supplied fictional return rule and preserve insufficient evidence.",
+    "description_zh": "仅应用给定的虚构退货规则，并保留证据不足的结果。",
+    "state": "Fictional shop rule: a change-of-mind return needs all three: request within 14 days of receipt, item unused, and purchase proof. Ticket: I received it five days ago and have the receipt. I do not know whether the gift recipient used it. I would like to return it.",
+    "state_zh": "虚构商店规则：无理由退货需同时满足收货后十四天内申请、商品未使用、有购买凭证。工单：五天前收到了商品，保留了收据，不知道收礼人有没有用过，现在想退货。",
+    "questions": {
+      "rule_evidence": {
+        "type": "choice",
+        "instructions": "Use only the supplied rule and ticket. A definite violated condition means contradicted; an unknown required condition without a definite violation means insufficient_information. This is not approval to issue a refund.",
+        "criteria": {
+          "supported": "All three required conditions are explicitly supported.",
+          "contradicted": "At least one required condition is explicitly violated.",
+          "insufficient_information": "At least one condition is unknown and none is explicitly violated."
+        }
+      },
+      "known_conditions": {
+        "type": "score",
+        "instructions": "Count conditions with a known value, whether satisfied or violated: time since receipt, whether the item was used, purchase proof. An explicitly unknown value does not count.",
+        "criteria": [
+          "No condition has a known value.",
+          "Exactly one condition has a known value.",
+          "Exactly two conditions have known values.",
+          "All three conditions have known values."
+        ]
+      },
+      "receipt_stated": {
+        "type": "noul",
+        "instructions": "The ticket explicitly says a purchase receipt is available."
+      }
+    },
+    "questions_zh": {
+      "rule_evidence": {
+        "type": "choice",
+        "instructions": "仅依据给定规则和工单。明确违反任一条件则选 contradicted；没有明确违反但有必需条件未知则选 insufficient_information。此判断不授权退款。",
+        "criteria": {
+          "supported": "三个必需条件都有明确满足的依据。",
+          "contradicted": "至少有一个必需条件明确不满足。",
+          "insufficient_information": "至少有一个条件未知，且没有条件明确不满足。"
+        }
+      },
+      "known_conditions": {
+        "type": "score",
+        "instructions": "统计有已知值的条件，无论满足还是违反：距收货时间、商品是否使用、购买凭证。明确表示未知的条件不计入。",
+        "criteria": [
+          "没有条件具有已知值。",
+          "恰好一个条件具有已知值。",
+          "恰好两个条件具有已知值。",
+          "三个条件全部具有已知值。"
+        ]
+      },
+      "receipt_stated": {
+        "type": "noul",
+        "instructions": "工单明确表示保留了购买收据。"
+      }
+    },
+    "icon": "lock",
+    "category": "Quality checks",
+    "category_zh": "质量检查",
+    "learning": "Unknown evidence stays unknown instead of becoming an automatic yes or no.",
+    "learning_zh": "未知证据应保留为未知，而不是自动变成同意或拒绝。"
   }
 ]

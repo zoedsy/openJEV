@@ -10,6 +10,7 @@ try{playwright=require(process.env.PLAYWRIGHT_MODULE||'playwright');}catch{}
 let server,browser,baseURL,requests,handler,currentStatus;
 const errors=[];
 const staticDir=path.resolve(__dirname,'../openjev/static');
+const QUICK_IDS=['support','chinese','review','facts','product_quality'];
 const examples=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../openjev/examples.json'),'utf8'));
 const json=(res,code,body)=>{res.writeHead(code,{'Content-Type':'application/json'});res.end(JSON.stringify(body));};
 function fixture(body){
@@ -45,7 +46,9 @@ async function setup(t,options={}){
   if(options.legacy)await context.addInitScript(()=>{localStorage.setItem('openjev.runs.v1',JSON.stringify([{id:1,request:{state:'legacy-content-to-remove',questions:{}},result:{answers:{}}}]));localStorage.setItem('unrelated-key','keep-me');});
   if(options.shortTimeout)await context.addInitScript(()=>{const original=window.setTimeout;window.setTimeout=(fn,ms,...args)=>original(fn,ms===120000?60:ms,...args);});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(`${baseURL}/?example=${options.example||'support'}`);await page.waitForFunction(()=>document.querySelector('#presets').children.length===5&&document.querySelector('#status-label').textContent.includes('ready'));
+  await page.goto(`${baseURL}/?example=${options.example||'support'}${options.view?'&view='+options.view:''}`);
+  const quickCount=QUICK_IDS.filter(id=>examples.some(example=>example.id===id)).length;
+  await page.waitForFunction(count=>document.querySelector('#presets').children.length===count&&document.querySelector('#status-label').textContent.includes('ready'),quickCount);
   return {page,context};
 }
 async function run(page){await page.click('#run-button');await page.waitForSelector('.result-card');}
@@ -61,7 +64,8 @@ test('English defaults, old app history is cleared narrowly, and examples contai
   await page.click('[data-view="history"]');assert.match(await page.textContent('#history-list'),/No runs yet/);
   assert.doesNotMatch(await page.textContent('body'),/legacy-content-to-remove/);
   assert.ok(examples.every(e=>e.state&&e.questions&&e.state_zh&&e.questions_zh));
-  assert.deepEqual(examples.map(e=>e.id),['support','chinese','review','facts','product_quality']);
+  assert.deepEqual(examples.filter(e=>QUICK_IDS.includes(e.id)).map(e=>e.id),QUICK_IDS);
+  assert.ok(examples.length>=QUICK_IDS.length);
 });
 
 test('English and Chinese switch static UI, built-in input, states, and editor; custom input is preserved',opts,async t=>{
@@ -118,4 +122,77 @@ test('desktop and mobile layouts fit both languages',opts,async t=>{
     await page.selectOption('#language-select',language);
     for(const width of [1440,390]){await page.setViewportSize({width,height:1000});const size=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(size.scroll<=size.width,JSON.stringify({language,...size}));if(process.env.PLAYGROUND_SCREENSHOTS){const dir=path.resolve(__dirname,'../artifacts');fs.mkdirSync(dir,{recursive:true});await page.screenshot({path:path.join(dir,`playground-mock-${language}-${width}.png`),fullPage:true});}}
   }
+});
+
+
+test('the bilingual gallery shows every example and filters across languages and categories without inference',opts,async t=>{
+  const {page}=await setup(t);
+  assert.equal(examples.length,12);
+  assert.equal(await page.locator('#presets [data-preset]').count(),QUICK_IDS.length);
+  assert.equal(await page.textContent('#example-total'),String(examples.length));
+  assert.match(await page.textContent('.language-label'),/中文/);
+  await page.click('#browse-examples');assert.equal(await page.isVisible('#examples-view'),true);
+  assert.equal(await page.locator('.example-card').count(),examples.length);
+  assert.equal(new URL(page.url()).searchParams.get('view'),'examples');
+  for(const example of examples){
+    const card=page.locator(`[data-example-id="${example.id}"]`);
+    assert.equal(await card.locator('.example-card-title [lang="en"]').textContent(),example.name);
+    assert.equal(await card.locator('.example-card-title [lang="zh-CN"]').textContent(),example.name_zh);
+    assert.equal(await card.locator('.example-description').textContent(),example.description);
+    assert.equal(await card.locator('.example-learning p').textContent(),example.learning);
+  }
+  const target=examples.find(e=>e.id==='meeting');
+  await page.fill('#example-search',target.name.toUpperCase());assert.equal(await page.locator(`[data-example-id="${target.id}"]`).count(),1);assert.ok(await page.locator('.example-card').count()<examples.length);
+  await page.fill('#example-search',target.name_zh);assert.equal(await page.locator(`[data-example-id="${target.id}"]`).count(),1);
+  await page.click('#clear-example-filters');assert.equal(await page.locator('.example-card').count(),examples.length);
+  await page.selectOption('#example-category',target.category);
+  assert.equal(await page.locator('.example-card').count(),examples.filter(e=>e.category===target.category).length);
+  await page.selectOption('#language-select','zh');assert.match(await page.textContent('#breadcrumb-view'),/案例画廊/);
+  assert.equal(await page.locator(`[data-example-id="${target.id}"] .example-description`).textContent(),target.description_zh);
+  assert.equal(await page.locator(`[data-example-id="${target.id}"] .example-learning p`).textContent(),target.learning_zh);
+  assert.equal(await page.locator('#example-category option:checked').textContent(),target.category_zh);
+  await page.fill('#example-search','no-matching-example-12345');assert.equal(await page.locator('.example-card').count(),0);assert.equal(await page.isVisible('#example-empty'),true);assert.match(await page.textContent('#example-empty'),/没有符合条件/);
+  await page.click('#clear-example-filters');assert.equal(await page.locator('.example-card').count(),examples.length);assert.equal(await page.isDisabled('#clear-example-filters'),true);
+  assert.equal(requests.length,0);
+});
+
+test('gallery loading uses the selected language and only explicit Run sends a request',opts,async t=>{
+  const {page}=await setup(t,{view:'examples'});
+  assert.equal(await page.isVisible('#examples-view'),true);
+  await page.selectOption('#language-select','zh');const example=examples.find(e=>e.id==='feedback');
+  await page.click(`[data-load-example="${example.id}"]`);assert.equal(await page.isVisible('#playground-view'),true);
+  const request=await page.evaluate(()=>getRequest());
+  assert.deepEqual(request.state,example.state_zh);assert.deepEqual(request.questions,example.questions_zh);
+  assert.equal(new URL(page.url()).searchParams.get('example'),example.id);assert.equal(new URL(page.url()).searchParams.get('view'),null);
+  assert.equal(requests.length,0);assert.match(await page.textContent('#toast'),/案例已载入/);
+  await run(page);assert.deepEqual(requests[0].body,request);
+  const promise=page.waitForEvent('download');await page.click('#download-result');const download=await promise;assert.deepEqual(JSON.parse(fs.readFileSync(await download.path(),'utf8')).request,request);
+  await page.click('#browse-examples');await page.selectOption('#language-select','en');
+  await page.click(`[data-load-example="${example.id}"]`);assert.deepEqual(await page.evaluate(()=>getRequest().state),example.state);assert.deepEqual(await page.evaluate(()=>getRequest().questions),example.questions);
+  assert.equal(requests.length,1);
+});
+
+test('browsing and changing gallery language never overwrite custom input or questions',opts,async t=>{
+  const {page}=await setup(t);
+  await page.fill('#state-input','My custom customer description.');
+  await page.click('[data-edit="department"]');await page.fill('#edit-instructions','My custom routing rule.');await page.click('#question-form button[type="submit"]');
+  const before=await page.evaluate(()=>getRequest());
+  await page.click('#browse-examples');await page.fill('#example-search','demo');await page.selectOption('#language-select','zh');await page.selectOption('#language-select','en');
+  await page.click('#examples-view [data-view="playground"]');assert.deepEqual(await page.evaluate(()=>getRequest()),before);assert.equal(requests.length,0);
+});
+
+test('gallery cards, bilingual titles, filters and language control fit desktop and 390px',opts,async t=>{
+  const {page}=await setup(t,{view:'examples'});
+  for(const language of ['en','zh']){
+    await page.selectOption('#language-select',language);
+    for(const width of [1440,390]){
+      await page.setViewportSize({width,height:1000});
+      const size=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(size.scroll<=size.width,JSON.stringify({language,...size}));
+      assert.equal(await page.isVisible('#language-select'),true);assert.equal(await page.isVisible('#example-search'),true);
+      const boxes=await page.locator('.example-card').evaluateAll(cards=>cards.map(card=>({left:card.getBoundingClientRect().left,right:card.getBoundingClientRect().right})));
+      assert.ok(boxes.every(box=>box.left>=0&&box.right<=width));
+      if(process.env.PLAYGROUND_SCREENSHOTS){const dir=path.resolve(__dirname,'../artifacts');fs.mkdirSync(dir,{recursive:true});await page.screenshot({path:path.join(dir,`examples-gallery-${language}-${width}.png`),fullPage:true});}
+    }
+  }
+  assert.equal(requests.length,0);
 });
