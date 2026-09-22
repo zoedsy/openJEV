@@ -1,0 +1,31 @@
+name: openjev
+services:
+  model:
+    image: razorback16/openjev@sha256:c131a33e9a341489649c22654fb3c5b6b8c7094ae1ffca8c8e8bee0a37a40da5
+    platform: linux/amd64
+    entrypoint: [python3, /recipe/serve.py]
+    ports:
+      - "127.0.0.1:8008:8080"
+    volumes:
+      - ./serve.py:/recipe/serve.py:ro
+      - ../../.data:/data
+    shm_size: 8gb
+    stop_grace_period: 30s
+    restart: "no"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import json,urllib.request; assert json.load(open('/data/openjev/status.json'))['phase']=='ready'; urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=5)"
+      interval: 30s
+      timeout: 10s
+      start_period: 30m
+      retries: 3

@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.env
+.env.*
+!.env.example
+.cache/
+.models/
+.DS_Store
+artifacts/
+dist/
+build/
+*.log
+
+# Personal deployment configuration and local evidence
+.private/
+.data/
+
+# Optional browser-test dependencies
+node_modules/

@@ -1,0 +1,34 @@
+{
+  "tickets": [
+    {
+      "title": "Checkout is blocked across the shop (fictional demo)",
+      "message": "Every order fails at the payment page. This has continued for ten minutes and our sale starts in half an hour. Please investigate immediately: all purchases are blocked. This is a fictional example.",
+      "channel": "Web form",
+      "fictional": true
+    },
+    {
+      "title": "Delivery update requested this week (fictional demo)",
+      "message": "My order was dispatched but the tracking status has not changed. Please check the expected delivery date this week. I do not need same-day delivery. This is a fictional example.",
+      "channel": "Online message",
+      "fictional": true
+    },
+    {
+      "title": "Account access needed today (fictional demo)",
+      "message": "I cannot sign in to the shop. Resetting the password still returns an error. I need to check an order today, so please help restore access today. This is a fictional example.",
+      "channel": "Web form",
+      "fictional": true
+    },
+    {
+      "title": "Nearby park opening hours (fictional demo)",
+      "message": "What time does the nearby park close? There is no deadline. This question is unrelated to shop accounts, products or orders. This is a fictional example.",
+      "channel": "Online message",
+      "fictional": true
+    },
+    {
+      "title": "Message not yet supplied (fictional demo)",
+      "message": "",
+      "channel": "Web form",
+      "fictional": true
+    }
+  ]
+}

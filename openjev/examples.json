@@ -1,0 +1,285 @@
+[
+  {
+    "id": "support",
+    "name": "Support ticket",
+    "name_zh": "客户工单",
+    "description": "Route a fictional request, assess frustration, and flag urgency.",
+    "description_zh": "虚构客户请求：分配团队、评估情绪、识别紧急程度。",
+    "state": "Fictional customer request: I've been unable to log into my account since this morning. The login page keeps showing a 500 error. Our entire team is blocked and we have a client deadline in two hours. Please fix this immediately!",
+    "state_zh": "虚构客户请求：今天早上开始，我就无法登录账户，登录页面一直显示 500 错误。整个团队的工作都被阻断，两小时后就要向客户交付。请尽快修复！",
+    "questions": {
+      "department": {
+        "type": "choice",
+        "instructions": "What is the main topic of this customer request?",
+        "criteria": {
+          "technical": "The customer reports a technical problem, software error or broken feature.",
+          "billing": "The customer asks about an invoice, payment or refund.",
+          "sales": "The customer wants to buy a product or discuss pricing."
+        }
+      },
+      "frustration": {
+        "type": "score",
+        "instructions": "How frustrated is the customer?",
+        "criteria": [
+          "The customer is calm and satisfied.",
+          "The customer is frustrated and unhappy.",
+          "The customer is furious and threatens to leave."
+        ]
+      },
+      "is_urgent": {
+        "type": "noul",
+        "instructions": "The customer needs immediate help because of an urgent deadline."
+      }
+    },
+    "questions_zh": {
+      "department": {
+        "type": "choice",
+        "instructions": "这位客户请求的主要主题是什么？",
+        "criteria": {
+          "technical": "客户报告技术故障、软件错误或无法使用的功能。",
+          "billing": "客户询问账单、付款或退款。",
+          "sales": "客户希望购买产品或讨论价格。"
+        }
+      },
+      "frustration": {
+        "type": "score",
+        "instructions": "客户有多不满？",
+        "criteria": [
+          "客户平静且满意。",
+          "客户感到沮丧和不满。",
+          "客户非常愤怒并威胁停止使用。"
+        ]
+      },
+      "is_urgent": {
+        "type": "noul",
+        "instructions": "客户因紧急截止时间而需要立即获得帮助。"
+      }
+    }
+  },
+  {
+    "id": "chinese",
+    "name": "Refund request",
+    "name_zh": "退款申请",
+    "description": "Check the intent and condition in a fictional return request.",
+    "description_zh": "虚构退货请求：识别诉求并判断商品状况。",
+    "state": "Fictional customer request: The headphones I bought yesterday have no sound on the left side. I tried three phones with the same result. I already opened the packaging. Can I request a refund?",
+    "state_zh": "虚构客户请求：昨天买的耳机左边完全没有声音，换了三台手机都一样。包装已经拆了，请问可以申请退款吗？",
+    "questions": {
+      "intent": {
+        "type": "choice",
+        "instructions": "What does this customer mainly want?",
+        "criteria": {
+          "refund": "The customer wants to return the product for a refund.",
+          "purchase": "The customer wants to buy a new product.",
+          "shipping": "The customer asks about delivery progress."
+        }
+      },
+      "sentiment": {
+        "type": "score",
+        "instructions": "How satisfied is the customer with the product?",
+        "criteria": [
+          "The customer is unhappy because the product has a problem.",
+          "The customer expresses neither satisfaction nor dissatisfaction.",
+          "The customer is very satisfied with the product."
+        ]
+      },
+      "defective": {
+        "type": "noul",
+        "instructions": "The headphones are defective and do not work normally."
+      }
+    },
+    "questions_zh": {
+      "intent": {
+        "type": "choice",
+        "instructions": "这位顾客的主要诉求是什么？",
+        "criteria": {
+          "refund": "顾客希望退货退款。",
+          "purchase": "顾客想要购买新的产品。",
+          "shipping": "顾客询问快递的配送进度。"
+        }
+      },
+      "sentiment": {
+        "type": "score",
+        "instructions": "顾客对产品有多满意？",
+        "criteria": [
+          "顾客对产品不满意，产品存在问题。",
+          "顾客对产品的评价一般，没有明确的满意或不满。",
+          "顾客对产品非常满意，认为产品很好。"
+        ]
+      },
+      "defective": {
+        "type": "noul",
+        "instructions": "耳机存在故障，无法正常使用。"
+      }
+    }
+  },
+  {
+    "id": "review",
+    "name": "Product review",
+    "name_zh": "产品评价",
+    "description": "Turn fictional product feedback into structured signals.",
+    "description_zh": "将虚构商品反馈转成可排序的判断。",
+    "state": "Fictional product review: The coffee machine makes wonderful espresso and looks beautiful on the counter. Setup took just five minutes. My only complaint is that the water tank is a little small, but I'd happily recommend it to a friend.",
+    "state_zh": "虚构商品评价：这台咖啡机做的意式浓缩很棒，放在台面上也很好看。安装只用了五分钟。唯一的遗憾是水箱有点小，但我很愿意推荐给朋友。",
+    "questions": {
+      "sentiment": {
+        "type": "choice",
+        "instructions": "What is the overall sentiment of the review?",
+        "criteria": {
+          "positive": "The reviewer likes the product and recommends it.",
+          "neutral": "The reviewer is neither satisfied nor dissatisfied.",
+          "negative": "The reviewer dislikes the product and regrets buying it."
+        }
+      },
+      "satisfaction": {
+        "type": "score",
+        "instructions": "How satisfied is the reviewer?",
+        "criteria": [
+          "The reviewer is very dissatisfied with the product.",
+          "The reviewer is somewhat dissatisfied with the product.",
+          "The reviewer is somewhat satisfied with the product.",
+          "The reviewer is very satisfied with the product."
+        ]
+      },
+      "recommends": {
+        "type": "noul",
+        "instructions": "The reviewer would recommend the product to others."
+      }
+    },
+    "questions_zh": {
+      "sentiment": {
+        "type": "choice",
+        "instructions": "这条评价的整体情绪是什么？",
+        "criteria": {
+          "positive": "评价者喜欢并推荐这款产品。",
+          "neutral": "评价者没有明显的满意或不满。",
+          "negative": "评价者不喜欢这款产品并后悔购买。"
+        }
+      },
+      "satisfaction": {
+        "type": "score",
+        "instructions": "评价者有多满意？",
+        "criteria": [
+          "评价者对产品非常不满意。",
+          "评价者对产品有些不满意。",
+          "评价者对产品比较满意。",
+          "评价者对产品非常满意。"
+        ]
+      },
+      "recommends": {
+        "type": "noul",
+        "instructions": "评价者愿意向其他人推荐这款产品。"
+      }
+    }
+  },
+  {
+    "id": "facts",
+    "name": "Order facts",
+    "name_zh": "订单事实",
+    "description": "Compare supported, contradicted, and unknown statements.",
+    "description_zh": "比较有依据、相互矛盾和信息不足的判断。",
+    "state": {
+      "fictional": true,
+      "order_id": "DEMO-104",
+      "item": "Electric kettle",
+      "delivery_city": "York",
+      "status": "delivered",
+      "color": "white"
+    },
+    "state_zh": {
+      "演示数据": true,
+      "订单编号": "DEMO-104",
+      "商品": "电热水壶",
+      "配送城市": "约克",
+      "状态": "已送达",
+      "颜色": "白色"
+    },
+    "questions": {
+      "delivered": {
+        "type": "noul",
+        "instructions": "The order has been delivered."
+      },
+      "in_london": {
+        "type": "noul",
+        "instructions": "The order was delivered in London."
+      },
+      "likes_color": {
+        "type": "noul",
+        "instructions": "The recipient likes the color of the kettle."
+      }
+    },
+    "questions_zh": {
+      "delivered": {
+        "type": "noul",
+        "instructions": "这笔订单已经送达。"
+      },
+      "in_london": {
+        "type": "noul",
+        "instructions": "这笔订单送到了伦敦。"
+      },
+      "likes_color": {
+        "type": "noul",
+        "instructions": "收件人喜欢这个水壶的颜色。"
+      }
+    }
+  },
+  {
+    "id": "product_quality",
+    "name": "Product listing",
+    "name_zh": "商品信息检查",
+    "description": "Find inconsistent or missing details in a fictional listing.",
+    "description_zh": "虚构商品页面：检查矛盾和缺失信息。",
+    "state": "Fictional product listing for demonstration only.\nName: Daytrip travel mug\nHeadline: A 2-liter mug for your commute.\nSpecifications: Capacity 750 mL; stainless steel; leak-resistant lid.\nPrice: USD 24.\nCare instructions: not provided.",
+    "state_zh": "纯虚构商品页面，仅用于演示。\n名称：Daytrip 随行杯\n宣传文案：通勤适用的 2 升随行杯。\n规格：容量 750 毫升；不锈钢材质；防漏杯盖。\n价格：24 美元。\n清洁保养说明：未提供。",
+    "questions": {
+      "consistency": {
+        "type": "choice",
+        "instructions": "Are the headline and specifications consistent about the product capacity?",
+        "criteria": {
+          "consistent": "The capacity is the same in the headline and specifications.",
+          "conflicting": "The headline and specifications report different capacities.",
+          "insufficient": "One or both capacity descriptions are missing."
+        }
+      },
+      "completeness": {
+        "type": "score",
+        "instructions": "How complete is the listing? Check only whether a price, capacity, and care instructions are present.",
+        "criteria": [
+          "None of these three details are provided.",
+          "Exactly one of these three details is provided.",
+          "Exactly two of these three details are provided.",
+          "All three details are provided."
+        ]
+      },
+      "missing_care_instructions": {
+        "type": "noul",
+        "instructions": "The listing does not provide care instructions."
+      }
+    },
+    "questions_zh": {
+      "consistency": {
+        "type": "choice",
+        "instructions": "宣传文案与规格中的商品容量是否一致？",
+        "criteria": {
+          "consistent": "宣传文案和规格提供的容量相同。",
+          "conflicting": "宣传文案和规格提供的容量不同。",
+          "insufficient": "一处或两处都没有提供容量信息。"
+        }
+      },
+      "completeness": {
+        "type": "score",
+        "instructions": "商品信息有多完整？只检查是否提供价格、容量和清洁保养说明。",
+        "criteria": [
+          "这三项信息均未提供。",
+          "这三项中恰好提供一项。",
+          "这三项中恰好提供两项。",
+          "三项信息全部提供。"
+        ]
+      },
+      "missing_care_instructions": {
+        "type": "noul",
+        "instructions": "商品页面没有提供清洁保养说明。"
+      }
+    }
+  }
+]
