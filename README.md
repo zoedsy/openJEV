@@ -8,7 +8,7 @@ A self-hosted playground and reproducible recipe for typed AI decisions: send co
 
 The GPU route uses [razorback16/openjev](https://github.com/razorback16/openjev) as its model-serving backend. This repository adds a visual playground, a bilingual batch ticket workspace, a CPU MiniLM route, bounded text generation, and reproducible deployment/evaluation tools. We have not trained a new DiffusionGemma model or established a model-quality improvement over that upstream server. See [the project comparison](docs/upstream-comparison.md).
 
-Independent of TypeSafe. This project does **not** contain Jev's weights or training method, and does not claim matching accuracy, calibration, latency, or SDK compatibility. The repository is currently private while the recipe is prepared for release.
+Independent of TypeSafe. This project does **not** contain Jev's weights or training method, and does not claim matching accuracy, calibration, latency, or SDK compatibility.
 
 ![openJEV Playground](docs/playground.png)
 
@@ -23,12 +23,12 @@ Independent of TypeSafe. This project does **not** contain Jev's weights or trai
 ## Try it on your laptop
 
 ```bash
-git clone git@github.com:zoedsy/openJEV.git
+git clone https://github.com/zoedsy/openJEV.git
 cd openJEV
 ./run.sh
 ```
 
-While the repository is private, cloning requires repository access. Python dependencies and model weights download on first launch. Open the **[playground](http://127.0.0.1:8766/)**. No model API key is required.
+Python dependencies and model weights download on first launch. Open the **[playground](http://127.0.0.1:8766/)**. No model API key is required.
 
 The playground defaults to **English**, with an **English / 简体中文** (`en` / `zh`) language switch shared with the ticket workspace. Changing language does not translate or overwrite a custom input or a completed result.
 

@@ -30,7 +30,7 @@ The specialized vLLM structured-read implementation comes from the pinned upstre
 
 ## 1. Start on the GPU host
 
-Clone this repository onto the host; private access is required until release. From its root:
+Clone this repository onto the host. From its root:
 
 ```bash
 nvidia-smi

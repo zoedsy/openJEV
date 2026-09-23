@@ -8,7 +8,7 @@ openJEV 提供可自行部署的双语 Playground 和部署、评测 recipe。�
 
 GPU 推理由 [razorback16/openjev](https://github.com/razorback16/openjev) 提供。这个仓库增加可视化编辑器、双语工单工作台、CPU MiniLM 路径、受限的文本生成接口，以及部署与评测工具。我们没有重新训练 DiffusionGemma，也没有证明模型质量优于该上游项目。详见[项目对照](docs/upstream-comparison.md)。
 
-这是独立项目，不包含 Jev 的权重或私有训练方法；不宣称达到它的准确率、校准水平、延迟或完整 SDK 兼容性。**仓库目前仍为 private**，正在整理供后续发布的 recipe。
+这是独立项目，不包含 Jev 的权重或私有训练方法；不宣称达到它的准确率、校准水平、延迟或完整 SDK 兼容性。代码与部署 recipe 已公开，可按下方步骤自行运行。
 
 ![openJEV Playground](docs/playground.png)
 
@@ -17,12 +17,12 @@ GPU 推理由 [razorback16/openjev](https://github.com/razorback16/openjev) 提�
 需要 Python 3.10 或更新版本，推荐 3.12：
 
 ```bash
-git clone git@github.com:zoedsy/openJEV.git
+git clone https://github.com/zoedsy/openJEV.git
 cd openJEV
 ./run.sh
 ```
 
-私有阶段需要仓库访问权限。首次启动会安装依赖并下载约 107 MB 的 MiniLM 权重；不需要购买模型 API key。打开 [Playground](http://127.0.0.1:8766/)。模型下载完成后，可以用 `OPENJEV_OFFLINE=1 ./run.sh` 避免再次联网下载权重。
+首次启动会安装依赖并下载约 107 MB 的 MiniLM 权重；不需要购买模型 API key。打开 [Playground](http://127.0.0.1:8766/)。模型下载完成后，可以用 `OPENJEV_OFFLINE=1 ./run.sh` 避免再次联网下载权重。
 
 页面默认英文，右上角可切换 **English / 简体中文**（`en` / `zh`），两个工作台共享语言偏好。语言切换不会翻译或覆盖你自行填写的输入，也不会修改已经完成的结果。
 
